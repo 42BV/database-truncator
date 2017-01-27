@@ -12,7 +12,7 @@ Usage is simple. Just import the dedendency and make sure your top-level abstrac
 <dependency>
     <groupId>nl.42</groupId>
     <artifactId>database-truncator</artifactId>
-    <version>0.1.0</version>
+    <version>0.3.0</version>
 </dependency>
 
 ```
