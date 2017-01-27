@@ -21,11 +21,22 @@ Usage is simple. Just import the dedendency and make sure your top-level abstrac
 
 Database Truncator follows the lead of the platform, as registered in ```spring.datasource.platform```. It will create the right ```DatabaseTruncator``` class belonging to the platform. If you have already created your own truncator, it will not interfere and give you right of way.
 
-```
+```yaml
 spring:
   datasource:
     platform: postgresql
 ```
+
+You can exclude tables from truncation by adding the following:
+
+```yaml
+database-truncator:
+  exclude:
+    - some_table
+    - "*view"
+```
+
+The logic uses Spring's AntPathMatcher to determine matches. Matches are removed from the table truncation list.
 
 ## Code sample
 
