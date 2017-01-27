@@ -4,8 +4,8 @@ import javax.sql.DataSource;
 
 public class HsqldbTruncator extends AbstractDatabaseTruncator {
 
-    public HsqldbTruncator(DataSource dataSource) {
-        super(dataSource);
+    public HsqldbTruncator(DataSource dataSource, DatabaseTruncatorProperties properties) {
+        super(dataSource, properties);
     }
 
     @Override

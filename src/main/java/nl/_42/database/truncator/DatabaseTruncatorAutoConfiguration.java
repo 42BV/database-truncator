@@ -19,24 +19,29 @@ import javax.sql.DataSource;
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(value= "spring.datasource.platform", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+@EnableConfigurationProperties(DatabaseTruncatorProperties.class)
 public class DatabaseTruncatorAutoConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseTruncatorAutoConfiguration.class);
 
     @Configuration
     @ConditionalOnMissingBean(DatabaseTruncator.class)
-    @EnableConfigurationProperties(DataSourceProperties.class)
+    @EnableConfigurationProperties({DataSourceProperties.class, DatabaseTruncatorProperties.class})
     public static class DatabaseTruncatorConfiguration {
 
         private final DataSource dataSource;
 
         private final DataSourceProperties dataSourceProperties;
 
+        private final DatabaseTruncatorProperties databaseTruncatorProperties;
+
         @SuppressWarnings("SpringJavaAutowiringInspection")
-        public DatabaseTruncatorConfiguration(DataSource dataSource, DataSourceProperties dataSourceProperties) {
+        public DatabaseTruncatorConfiguration(DataSource dataSource, DataSourceProperties dataSourceProperties,
+                                              DatabaseTruncatorProperties databaseTruncatorProperties) {
             LOGGER.info("Configuring DatabaseTruncator");
             this.dataSource = dataSource;
             this.dataSourceProperties = dataSourceProperties;
+            this.databaseTruncatorProperties = databaseTruncatorProperties;
         }
 
         @Bean
@@ -49,13 +54,13 @@ public class DatabaseTruncatorAutoConfiguration {
             }
             if (platform.equals("postgresql")) {
                 logCreation(platform,"Postgres Truncator");
-                return new PostgresTruncator(dataSource);
+                return new PostgresTruncator(dataSource, databaseTruncatorProperties);
             } if (platform.equals("h2")) {
                 logCreation(platform,"H2 Truncator");
-                return new H2Truncator(dataSource);
+                return new H2Truncator(dataSource, databaseTruncatorProperties);
             } if (platform.equals("hsqldb")) {
                 logCreation(platform,"HSQLDB Truncator");
-                return new HsqldbTruncator(dataSource);
+                return new HsqldbTruncator(dataSource, databaseTruncatorProperties);
             }
             LOGGER.error("spring.datasource.platform does not have a valid value");
             throw new ExceptionInInitializerError(

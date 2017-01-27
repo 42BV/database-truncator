@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "databaseTruncator.exclude",
+      "type": "java.util.List",
+      "description": "All prefixes that must be excluded from the collection of tables that must be truncated."
+    }
+  ]
+}
