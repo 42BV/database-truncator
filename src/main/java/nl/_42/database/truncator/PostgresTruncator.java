@@ -15,25 +15,6 @@ public class PostgresTruncator extends AbstractDatabaseTruncator {
 
     public PostgresTruncator(DataSource dataSource, DatabaseTruncatorProperties properties) {
         super(dataSource, properties);
-        createTruncateMethod();
-    }
-
-    private void createTruncateMethod() {
-        jdbcTemplate.execute("CREATE OR REPLACE FUNCTION truncate_tables(_username text)\n" +
-                "  RETURNS void AS\n" +
-                "$func$\n" +
-                "BEGIN\n" +
-                "   RAISE NOTICE '%', \n" +
-                "   -- EXECUTE  -- dangerous, test before you execute!\n" +
-                "  (SELECT 'TRUNCATE TABLE '\n" +
-                "       || string_agg(quote_ident(schemaname) || '.' || quote_ident(tablename), ', ')\n" +
-                "       || ' CASCADE'\n" +
-                "   FROM   pg_tables\n" +
-                "   WHERE  tableowner = _username\n" +
-                "   AND    schemaname = 'public'\n" +
-                "   );\n" +
-                "END\n" +
-                "$func$ LANGUAGE plpgsql;");
     }
 
     @Override
@@ -60,8 +41,8 @@ public class PostgresTruncator extends AbstractDatabaseTruncator {
     }
 
     public void truncate() throws MetaDataAccessException {
-        getTables().forEach(table -> jdbcTemplate.execute("SELECT truncate_tables('" + table + "')"));
-//        getSequences().forEach(sequence -> jdbcTemplate.execute("ALTER SEQUENCE " + sequence + " RESTART WITH 1"));
+        getTables().forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE " + table + " CASCADE"));
+        getSequences().forEach(sequence -> jdbcTemplate.execute("ALTER SEQUENCE " + sequence + " RESTART WITH 1"));
     }
 
 }
