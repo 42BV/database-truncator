@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-nl._42.database.truncator.DatabaseTruncatorAutoConfiguration
+nl._42.database.truncator.config.DatabaseTruncatorAutoConfiguration

@@ -1,5 +1,7 @@
-package nl._42.database.truncator;
+package nl._42.database.truncator.config;
 
+import nl._42.database.truncator.DatabaseTruncator;
+import nl._42.database.truncator.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -46,29 +48,8 @@ public class DatabaseTruncatorAutoConfiguration {
 
         @Bean
         public DatabaseTruncator databaseTruncator() {
-            String platform = dataSourceProperties.getPlatform();
-            if (platform == null || platform.equals("")) {
-                LOGGER.error("spring.datasource.platform does not have a valid value");
-                throw new ExceptionInInitializerError(
-                        "The Database Truncator cannot be configured. Set spring.datasource.platform value to non-empty, valid value");
-            }
-            if (platform.equals("postgresql")) {
-                logCreation(platform,"Postgres Truncator");
-                return new PostgresTruncator(dataSource, databaseTruncatorProperties);
-            } if (platform.equals("h2")) {
-                logCreation(platform,"H2 Truncator");
-                return new H2Truncator(dataSource, databaseTruncatorProperties);
-            } if (platform.equals("hsqldb")) {
-                logCreation(platform,"HSQLDB Truncator");
-                return new HsqldbTruncator(dataSource, databaseTruncatorProperties);
-            }
-            LOGGER.error("spring.datasource.platform does not have a valid value");
-            throw new ExceptionInInitializerError(
-                    "The Database Truncator cannot be configured. Set [spring.datasource.platform=" + platform + "] value to valid value");
-        }
-
-        private void logCreation(String platform, String title) {
-            LOGGER.info("Platform [" + platform + "] > Creating " + title);
+            Platform platform = Platform.determinePlatform(dataSourceProperties.getPlatform());
+            return platform.createTruncator(dataSource, databaseTruncatorProperties);
         }
 
     }
