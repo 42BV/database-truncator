@@ -1,8 +1,8 @@
 package nl._42.database.truncator.postgres;
 
-import nl._42.database.truncator.config.DatabaseTruncatorProperties;
-
 import javax.sql.DataSource;
+
+import nl._42.database.truncator.config.DatabaseTruncatorProperties;
 
 public class PostgresTruncationStrategy extends AbstractPostgresTruncationStrategy {
 
@@ -12,7 +12,6 @@ public class PostgresTruncationStrategy extends AbstractPostgresTruncationStrate
 
     @Override
     public void executePostgresTruncate() {
-        tables.forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE " + table + " CASCADE"));
+        executeSql(tables, "truncate tables", "TRUNCATE TABLE %s CASCADE;");
     }
-
 }

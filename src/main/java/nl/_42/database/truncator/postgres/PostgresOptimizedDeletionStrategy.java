@@ -1,18 +1,26 @@
 package nl._42.database.truncator.postgres;
 
-import nl._42.database.truncator.config.DatabaseTruncatorProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StopWatch;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
-import java.util.*;
+
+import nl._42.database.truncator.config.DatabaseTruncatorProperties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgresOptimizedDeletionStrategy extends AbstractPostgresTruncationStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgresOptimizedDeletionStrategy.class);
 
     private Map<String, Set<String>> tableConnectedTo = new HashMap<>();
+
+    private String tablesToTruncateQuery;
 
     public PostgresOptimizedDeletionStrategy(DataSource dataSource, DatabaseTruncatorProperties properties) {
         super(dataSource, properties);
@@ -21,10 +29,18 @@ public class PostgresOptimizedDeletionStrategy extends AbstractPostgresTruncatio
     @Override
     public void setup() {
         super.setup();
+
         tableConnectedTo = determineForeignKeys();
         for (String foreignTable : tableConnectedTo.keySet()) {
             LOGGER.debug("table [" + foreignTable + "] referred to by [" + String.join(", ", tableConnectedTo.get(foreignTable)) + "]");
         }
+
+        tablesToTruncateQuery =
+                "SELECT table_name FROM ( " +
+                  tables.stream()
+                        .map(table -> "SELECT '" + table + "' AS table_name, COUNT(*) AS count_val FROM " + table)
+                        .collect(Collectors.joining(" UNION ALL ")) +
+                ") x where count_val > 0";
     }
 
     private Map<String, Set<String>> determineForeignKeys() {
@@ -58,14 +74,7 @@ public class PostgresOptimizedDeletionStrategy extends AbstractPostgresTruncatio
     }
 
     protected List<String> tablesToTruncate() {
-        List<String> tablesToTruncate = new ArrayList<>();
-        for (String table : tables) {
-            Integer count = jdbcTemplate.queryForObject("select count(*) from " + table, Integer.class);
-            if (count > 0) {
-                tablesToTruncate.add(table);
-            }
-        }
-        return tablesToTruncate;
+        return jdbcTemplate.queryForList(tablesToTruncateQuery, String.class);
     }
 
     protected Set<String> tablesToHaveTriggersDisabled(List<String> tablesToTruncate) {
@@ -86,30 +95,8 @@ public class PostgresOptimizedDeletionStrategy extends AbstractPostgresTruncatio
         LOGGER.debug("Truncate tables: " + String.join(", ", tablesToTruncate));
         Set<String> tablesToHaveTriggersDisabled = tablesToHaveTriggersDisabled(tablesToTruncate);
         LOGGER.debug("Disable triggers for: " + String.join(", ", tablesToHaveTriggersDisabled));
-        executeSql(tablesToHaveTriggersDisabled,"disable triggers", "ALTER TABLE %s DISABLE TRIGGER ALL");
-        executeSql(tablesToTruncate,"delete tables", "DELETE FROM %s");
-        executeSql(tablesToHaveTriggersDisabled,"enable triggers", "ALTER TABLE %s ENABLE TRIGGER ALL");
+        executeSql(tablesToHaveTriggersDisabled,"disable triggers", "ALTER TABLE %s DISABLE TRIGGER ALL;");
+        executeSql(tablesToTruncate,"delete tables", "DELETE FROM %s;");
+        executeSql(tablesToHaveTriggersDisabled,"enable triggers", "ALTER TABLE %s ENABLE TRIGGER ALL;");
     }
-
-    private void executeSql(Collection<String> records, String title, String sql) {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        records.forEach(record -> executeSql(null, String.format(sql, record)));
-        stopWatch.stop();
-        LOGGER.debug(title + " took: " + stopWatch.getTotalTimeMillis() + " ms");
-    }
-
-    private void executeSql(String title, String sql) {
-        StopWatch stopWatch = null;
-        if (title != null) {
-            stopWatch = new StopWatch();
-            stopWatch.start();
-        }
-        jdbcTemplate.execute(sql);
-        if (stopWatch != null) {
-            stopWatch.stop();
-            LOGGER.debug(title + " took: " + stopWatch.getTotalTimeMillis() + " ms");
-        }
-    }
-
 }

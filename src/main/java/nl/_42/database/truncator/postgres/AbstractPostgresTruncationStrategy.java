@@ -1,13 +1,17 @@
 package nl._42.database.truncator.postgres;
 
-import nl._42.database.truncator.config.DatabaseTruncatorProperties;
-import nl._42.database.truncator.shared.AbstractTruncationStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
+import nl._42.database.truncator.config.DatabaseTruncatorProperties;
+import nl._42.database.truncator.shared.AbstractTruncationStrategy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StopWatch;
 
 public abstract class AbstractPostgresTruncationStrategy extends AbstractTruncationStrategy {
 
@@ -64,4 +68,24 @@ public abstract class AbstractPostgresTruncationStrategy extends AbstractTruncat
                 !tableName.equals(LIQUIBASE_CHANGE_LOG_LOCK);
     }
 
+    void executeSql(Collection<String> records, String title, String sql) {
+        StopWatch stopWatch = null;
+        if (title != null) {
+            stopWatch = new StopWatch();
+            stopWatch.start();
+        }
+
+        String query =
+                "START TRANSACTION;\n" +
+                    records.stream()
+                           .map(record -> String.format(sql, record))
+                           .collect(Collectors.joining("\n")) +
+                "\nCOMMIT;";
+        jdbcTemplate.execute(query);
+
+        if (stopWatch != null) {
+            stopWatch.stop();
+            LOGGER.debug(title + " took: " + stopWatch.getTotalTimeMillis() + " ms");
+        }
+    }
 }
