@@ -38,9 +38,15 @@ public class PostgresOptimizedDeletionStrategy extends AbstractPostgresTruncatio
         tablesToTruncateQuery =
                 "SELECT table_name FROM ( " +
                   tables.stream()
-                        .map(table -> "SELECT '" + table + "' AS table_name, COUNT(*) AS count_val FROM " + table)
+                        .map(this::buildRecordsExistQueryForTable)
                         .collect(Collectors.joining(" UNION ALL ")) +
-                ") x where count_val > 0";
+                ") x";
+    }
+
+    private String buildRecordsExistQueryForTable(String table) {
+        return "SELECT table_name::text from (" +
+               "  SELECT '" + table + "' AS table_name FROM " + table + " LIMIT 1" +
+               ") " + table;
     }
 
     private Map<String, Set<String>> determineForeignKeys() {
