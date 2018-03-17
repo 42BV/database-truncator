@@ -14,7 +14,9 @@ import static nl._42.database.truncator.TruncationStrategy.*;
 public enum Platform {
     H2(H2_TRUNCATION),
     HSQLDB(HSQLDB_TRUNCATION),
-    POSTGRESQL(POSTGRES_DELETION_OPTIMIZED, POSTGRES_DELETION, POSTGRES_TRUNCATION);
+    POSTGRESQL(POSTGRES_DELETION_OPTIMIZED, POSTGRES_DELETION, POSTGRES_TRUNCATION),
+    MYSQL(MARIADB_TRUNCATION),
+    MARIADB(MARIADB_TRUNCATION);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Platform.class);
 

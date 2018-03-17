@@ -3,6 +3,7 @@ package nl._42.database.truncator;
 import nl._42.database.truncator.config.DatabaseTruncatorProperties;
 import nl._42.database.truncator.h2.H2TruncationStrategy;
 import nl._42.database.truncator.hsqldb.HsqldbTruncationStrategy;
+import nl._42.database.truncator.mariadb.MariaDbTruncationStrategy;
 import nl._42.database.truncator.postgres.PostgresDeletionStrategy;
 import nl._42.database.truncator.postgres.PostgresOptimizedDeletionStrategy;
 import nl._42.database.truncator.postgres.PostgresTruncationStrategy;
@@ -39,6 +40,12 @@ public enum TruncationStrategy {
         @Override
         public AbstractTruncationStrategy createTruncator(DataSource dataSource, DatabaseTruncatorProperties databaseTruncatorProperties) {
             return new PostgresOptimizedDeletionStrategy(dataSource, databaseTruncatorProperties);
+        }
+    },
+    MARIADB_TRUNCATION {
+        @Override
+        public AbstractTruncationStrategy createTruncator(DataSource dataSource, DatabaseTruncatorProperties databaseTruncatorProperties) {
+            return new MariaDbTruncationStrategy(dataSource, databaseTruncatorProperties);
         }
     };
 
