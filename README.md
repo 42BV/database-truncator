@@ -8,13 +8,12 @@ Usage is simple. Just import the dedendency and make sure your top-level abstrac
 
 ## Maven Dependency
 
-```
+```xml
 <dependency>
     <groupId>nl.42</groupId>
     <artifactId>database-truncator</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.1</version>
 </dependency>
-
 ```
 
 ## How it works
