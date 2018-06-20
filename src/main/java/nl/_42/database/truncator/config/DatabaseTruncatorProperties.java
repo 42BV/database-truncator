@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConfigurationProperties(prefix = "databaseTruncator", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "database-truncator", ignoreUnknownFields = false)
 public class DatabaseTruncatorProperties {
 
     private List<String> exclude = new ArrayList<>();
