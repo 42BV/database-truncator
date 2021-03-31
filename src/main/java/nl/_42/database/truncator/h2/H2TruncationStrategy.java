@@ -1,11 +1,12 @@
 package nl._42.database.truncator.h2;
 
-import nl._42.database.truncator.config.DatabaseTruncatorProperties;
-import nl._42.database.truncator.shared.AbstractTruncationStrategy;
-
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
+
+import nl._42.database.truncator.config.DatabaseTruncatorProperties;
+import nl._42.database.truncator.shared.AbstractTruncationStrategy;
 
 public class H2TruncationStrategy extends AbstractTruncationStrategy {
 
@@ -45,10 +46,10 @@ public class H2TruncationStrategy extends AbstractTruncationStrategy {
     public void executeTruncate() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE;");
         tables.forEach(table -> jdbcTemplate.execute("TRUNCATE TABLE " + table));
-        sequences.forEach(sequence -> jdbcTemplate.execute("ALTER SEQUENCE " + sequence + " RESTART WITH 1"));
         if (properties.getResetSequences()) {
-            jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
+            sequences.forEach(sequence -> jdbcTemplate.execute("ALTER SEQUENCE " + sequence + " RESTART WITH 1"));
         }
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE;");
     }
 
 }
