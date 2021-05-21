@@ -1,15 +1,22 @@
 package nl._42.database.truncator;
 
-import nl._42.database.truncator.config.DatabaseTruncatorProperties;
-import nl._42.database.truncator.shared.AbstractTruncationStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static nl._42.database.truncator.TruncationStrategy.H2_TRUNCATION;
+import static nl._42.database.truncator.TruncationStrategy.HSQLDB_TRUNCATION;
+import static nl._42.database.truncator.TruncationStrategy.MARIADB_TRUNCATION;
+import static nl._42.database.truncator.TruncationStrategy.POSTGRES_DELETION;
+import static nl._42.database.truncator.TruncationStrategy.POSTGRES_DELETION_OPTIMIZED;
+import static nl._42.database.truncator.TruncationStrategy.POSTGRES_TRUNCATION;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
-import static nl._42.database.truncator.TruncationStrategy.*;
+import javax.sql.DataSource;
+
+import nl._42.database.truncator.config.DatabaseTruncatorProperties;
+import nl._42.database.truncator.shared.AbstractTruncationStrategy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum Platform {
     H2(H2_TRUNCATION),
@@ -40,7 +47,7 @@ public enum Platform {
         }
         throw new ExceptionInInitializerError(
                 "The Database Truncator cannot be configured. Illegal platform: " + platformText + ". Set " +
-                "spring.datasource.platform value to non-empty, valid value");
+                        "spring.sql.init.platform value to non-empty, valid value");
     }
 
     public TruncationStrategy determineStrategy(TruncationStrategy strategy) {
