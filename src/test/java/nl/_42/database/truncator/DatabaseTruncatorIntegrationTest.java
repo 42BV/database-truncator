@@ -1,17 +1,14 @@
 package nl._42.database.truncator;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import javax.sql.DataSource;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
+@SpringBootTest
 public class DatabaseTruncatorIntegrationTest {
 
     @Autowired
@@ -28,10 +25,10 @@ public class DatabaseTruncatorIntegrationTest {
         final JdbcTemplate template = new JdbcTemplate(dataSource);
 
         template.execute("INSERT INTO my_table (col1) values (1)");
-        Assert.assertEquals(1, getCount(template, MY_TABLE));
+        Assertions.assertEquals(1, getCount(template, MY_TABLE));
 
         truncator.truncate();
-        Assert.assertEquals(0, getCount(template, MY_TABLE));
+        Assertions.assertEquals(0, getCount(template, MY_TABLE));
     }
 
     @Test
@@ -41,11 +38,9 @@ public class DatabaseTruncatorIntegrationTest {
 
         jdbcTemplate.execute("INSERT INTO ignored_table (col1) values (42)");
 
-        Assert.assertEquals(1, getCount(jdbcTemplate, IGNORED_TABLE));
-
+        Assertions.assertEquals(1, getCount(jdbcTemplate, IGNORED_TABLE));
         truncator.truncate();
-
-        Assert.assertEquals(1, getCount(jdbcTemplate, IGNORED_TABLE));
+        Assertions.assertEquals(1, getCount(jdbcTemplate, IGNORED_TABLE));
     }
 
     private int getCount(JdbcTemplate template, String tableName) {
