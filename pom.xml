@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.0</version>
+        <version>3.0.2</version>
     </parent>
 
     <name>Database Truncator</name>
@@ -39,8 +39,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/42BV/database-truncator.git</connection>
-        <developerConnection>scm:git:https://github.com/42BV/database-truncator.git</developerConnection>
+        <connection>scm:git:https://github.com:42BV/database-truncator.git</connection>
+        <developerConnection>scm:git:https://github.com:42BV/database-truncator.git</developerConnection>
         <url>https://github.com/42BV/database-truncator</url>
         <tag>HEAD</tag>
     </scm>
@@ -58,17 +58,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -97,7 +86,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
@@ -116,10 +105,11 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>6.1.6</version>
+                <version>7.2.1</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                     <skipProvidedScope>true</skipProvidedScope>
+                    <skipTestScope>true</skipTestScope>
                     <skipRuntimeScope>true</skipRuntimeScope>
                     <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                     <suppressionFile>owasp-suppressions.xml</suppressionFile>
@@ -136,7 +126,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                         <configuration>
                             <source>${java.version}</source>
                         </configuration>
@@ -165,7 +155,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -180,5 +170,6 @@
             </build>
         </profile>
     </profiles>
+
 </project>
 

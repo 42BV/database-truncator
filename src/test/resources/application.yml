@@ -1,0 +1,16 @@
+database-truncator:
+  exclude: IGNORED_TABLE
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: jdbc:h2:mem:testdb
+    password: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: '/h2'
+  sql:
+    init:
+      platform: 'h2'
