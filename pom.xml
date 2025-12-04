@@ -7,6 +7,7 @@
 
     <name>Database Truncator</name>
     <description>Logic for emptying database tables of their content without affecting the structure. Useful for unit tests</description>
+    <url>https://www.42.nl</url>
 
     <organization>
         <name>42 BV</name>
@@ -27,6 +28,25 @@
         <url>https://github.com/42BV/database-truncator</url>
         <tag>HEAD</tag>
     </scm>
+
+    <developers>
+        <developer>
+            <name>Robert Bor</name>
+            <email>robert.bor@42.nl</email>
+        </developer>
+        <developer>
+            <name>Jeroen van Schagen</name>
+            <email>jeroen.van.schagen@42.nl</email>
+        </developer>
+        <developer>
+            <name>Arjan Vlek</name>
+            <email>arjan.vlek@42.nl</email>
+        </developer>
+        <developer>
+            <name>Bas de Vos</name>
+            <email>bas.de.vos@42.nl</email>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
